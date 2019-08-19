@@ -57,7 +57,7 @@ class RobonectConfig extends IPSModule {
         if ($ip != '' ||  $user != '' || $password != '') {
             $status = $this->GetStatus();
             if ($status != '') {
-				$name = $mower['name'];
+				$name = $status['name'];
                 $options[] = ['label' => $name, 'value' => $name];
             }
         }
@@ -73,7 +73,7 @@ class RobonectConfig extends IPSModule {
                             'type'    => 'Button',
                             'caption' => 'Import of mower',
                             'confirm' => 'Triggering the function creates the instances for the selected Automower-device. Are you sure?',
-                            'onClick' => 'AutomowerConfig_Doit($id, $mower_name);'
+                            'onClick' => 'RobonectConfig_Doit($id, $mower_name);'
                         ];
         // $formActions[] = [
 							// 'type' => 'Label',
