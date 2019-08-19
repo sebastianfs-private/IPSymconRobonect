@@ -43,7 +43,7 @@ class RobonectConfig extends IPSModule {
 							'caption' => 'User'
 						];
         $formElements[] = [
-							'type' => 'ValidationTextBox',
+							'type' => 'PasswordTextBox',
 							'name' => 'password',
 							'caption' => 'Password'
 						];
@@ -72,7 +72,7 @@ class RobonectConfig extends IPSModule {
         $formActions[] = [
                             'type'    => 'Button',
                             'caption' => 'Import of mower',
-                            'confirm' => 'Triggering the function creates the instances for the selected Automower-device. Are you sure?',
+                            'confirm' => 'Triggering the function creates the instances for the selected Robonect-device. Are you sure?',
                             'onClick' => 'RobonectConfig_Doit($id, $mower_name);'
                         ];
         // $formActions[] = [
