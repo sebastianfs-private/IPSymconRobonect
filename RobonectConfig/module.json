@@ -1,0 +1,11 @@
+{
+  "id": "{82b4d6bf-5fff-4d8c-92f0-b570b2a99c9b}",
+  "name": "RobonectConfig",
+  "type": 4,
+  "vendor": "Husqvarna",
+  "aliases": ["Robonect Konfigurator"],
+  "parentRequirements": [],
+  "childRequirements": [],
+  "implemented": [],
+  "prefix": "RobonectConfig"
+}

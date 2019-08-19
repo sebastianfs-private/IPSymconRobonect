@@ -1,0 +1,11 @@
+{
+  "id": "{57343e98-f3cb-466c-a7cb-55b7b72e6b58}",
+  "name": "RobonectDevice",
+  "type": 3,
+  "vendor": "Husqvarna",
+  "aliases": ["Robonect"],
+  "parentRequirements": [],
+  "childRequirements": [],
+  "implemented": [],
+  "prefix": "RobonectDevice"
+}
