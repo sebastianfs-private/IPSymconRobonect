@@ -32,9 +32,21 @@ class RobonectConfig extends IPSModule {
     public function GetConfigurationForm()
     {
         $formElements = [];
-		$formElements[] = ['type' => 'ValidationTextBox', 'name' => 'ip', 'caption' => 'IP-Address'];
-        $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'user', 'caption' => 'User'];
-        $formElements[] = ['type' => 'ValidationTextBox', 'name' => 'password', 'caption' => 'Password'];
+		$formElements[] = [
+							'type' => 'ValidationTextBox',
+							'name' => 'ip',
+							'caption' => 'IP-Address'
+						];
+        $formElements[] = [
+							'type' => 'ValidationTextBox',
+							'name' => 'user',
+							'caption' => 'User'
+						];
+        $formElements[] = [
+							'type' => 'ValidationTextBox',
+							'name' => 'password',
+							'caption' => 'Password'
+						];
 
         $options = [];
 		
@@ -42,31 +54,37 @@ class RobonectConfig extends IPSModule {
         $user = $this->ReadPropertyString('user');
         $password = $this->ReadPropertyString('password');
 
-        if ($user != '' || $password != '') {
-            // $mowers = $this->GetMowerList();
-            // if ($mowers != '') {
-                // foreach ($mowers as $mower) {
-                    // $name = $mower['name'];
-                    // $options[] = ['label' => $name, 'value' => $name];
-                // }
-            // }
+        if ($ip != '' ||  $user != '' || $password != '') {
+            $status = $this->GetStatus();
+            if ($status != '') {
+				$name = $mower['name'];
+                $options[] = ['label' => $name, 'value' => $name];
+            }
         }
 
         $formActions = [];
-        $formActions[] = ['type' => 'Select', 'name' => 'mower_name', 'caption' => 'Mower-Name', 'options' => $options];
+        $formActions[] = [
+							'type' => 'Select',
+							'name' => 'mower_name',
+							'caption' => 'Mower-Name',
+							'options' => $options
+						];
         $formActions[] = [
                             'type'    => 'Button',
                             'caption' => 'Import of mower',
                             'confirm' => 'Triggering the function creates the instances for the selected Automower-device. Are you sure?',
                             'onClick' => 'AutomowerConfig_Doit($id, $mower_name);'
                         ];
-        $formActions[] = ['type' => 'Label', 'label' => '____________________________________________________________________________________________________'];
-        $formActions[] = [
-                            'type'    => 'Button',
-                            'caption' => 'Module description',
-                            'onClick' => 'echo "https://github.com/demel42/IPSymconAutomowerConnect/blob/master/README.md";'
-                        ];
-
+        // $formActions[] = [
+							// 'type' => 'Label',
+							// 'label' => '____________________________________________________________________________________________________'
+						// ];
+        // $formActions[] = [
+                            // 'type'    => 'Button',
+                            // 'caption' => 'Module description',
+                            // 'onClick' => 'echo "https://github.com/demel42/IPSymconAutomowerConnect/blob/master/README.md";'
+                        // ];
+		
         $formStatus = [];
         $formStatus[] = ['code' => IS_CREATING, 'icon' => 'inactive', 'caption' => 'Instance getting created'];
         $formStatus[] = ['code' => IS_ACTIVE, 'icon' => 'active', 'caption' => 'Instance is active'];

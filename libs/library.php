@@ -8,20 +8,59 @@ if (!defined('IS_UNAUTHORIZED')) {
     define('IS_DEVICE_MISSING', IS_EBASE + 5);
 }
 
-trait AutomowerLibrary
+trait RobonectLibrary
 {
-    private $url_im = 'https://iam-api.dss.husqvarnagroup.net/api/v3/';
-    private $url_track = 'https://amc-api.dss.husqvarnagroup.net/v1/';
 
-    public function GetMowerList()
+    public function GetStatus()
     {
-        $cdata = $this->do_ApiCall($this->url_track . 'mowers');
-        if ($cdata == '') {
+		$ip = $this->ReadPropertyString('ip');
+		$user = $this->ReadPropertyString('user');
+        $password = $this->ReadPropertyString('password');
+		
+		$url = 'http://' . $ip . '/json';
+		$params = array('cmd' => 'status');
+		$header = array('Content-Type' => 'application/json');
+		$header = addBasicAuth($header, $user, $password);
+		
+		$response = request("GET", $url, $header, $params);
+		if ($response == '') {
             return false;
         }
-        $mowers = json_decode($cdata, true);
-        return $mowers;
+        $data = json_decode($response, true);
+        return $data;
     }
+	
+	// method should be "GET", "PUT", etc..
+	function request($method, $url, $header, $params) {
+		$opts = array(
+			'http' => array(
+				'method' => $method,
+			),
+		);
+
+		// serialize the header if needed
+		if (!empty($header)) {
+			$header_str = '';
+			foreach ($header as $key => $value) {
+				$header_str .= "$key: $value\r\n";
+			}
+			$header_str .= "\r\n";
+			$opts['http']['header'] = $header_str;
+		}
+
+		// serialize the params if there are any
+		if (!empty($params)) {
+			$params_array = array();
+			foreach ($params as $key => $value) {
+				$params_array[] = "$key=$value";
+			}
+			$url .= '?'.implode('&', $params_array);
+		}
+
+		$context = stream_context_create($opts);
+		$data = file_get_contents($url, false, $context);
+		return $data;
+	}
 
     private function getToken()
     {
