@@ -1,5 +1,8 @@
 <?
 
+require_once __DIR__ . '/../libs/common.php';  // globale Funktionen
+require_once __DIR__ . '/../libs/library.php';  // modul-bezogene Funktionen
+
 class RobonectConfig extends IPSModule {
 
     public function Create() {
