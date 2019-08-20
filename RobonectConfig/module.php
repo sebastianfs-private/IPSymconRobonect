@@ -49,17 +49,36 @@ class RobonectConfig extends IPSModule {
 						];
 
         $options = [];
+		$options[] = ['label' => 'Test', 'value' => 'Test'];
 		
 		$ip = $this->ReadPropertyString('ip');
         $user = $this->ReadPropertyString('user');
         $password = $this->ReadPropertyString('password');
 
         if ($ip != '' ||  $user != '' || $password != '') {
-            $status = $this->GetStatus();
-            if ($status != '') {
+            // $status = $this->GetStatus();
+            // if ($status != '') {
+				// $name = $status['name'];
+                // $options[] = ['label' => $name, 'value' => $name];
+            // }
+			
+			$debug = False;
+
+			$getDataUrl = array(
+				"status"  => "/json?cmd=status",
+				"version" => "/json?cmd=version",
+				"error"   => "/json?cmd=error"
+			);
+				
+			$content = $this->url_get_contents($getDataUrl['status'], $debug);
+
+			$status = json_decode($content, true);
+
+			if($status['successful'] == true){
 				$name = $status['name'];
-                $options[] = ['label' => $name, 'value' => $name];
-            }
+				$options[] = ['label' => $name, 'value' => $name];
+			}
+
         }
 
         $formActions = [];

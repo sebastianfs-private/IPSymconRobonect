@@ -10,7 +10,43 @@ if (!defined('IS_UNAUTHORIZED')) {
 
 trait RobonectLibrary
 {
+	
+	function url_get_contents($url, $debug = false){
+		$ip = $this->ReadPropertyString('ip');
+		$user = $this->ReadPropertyString('user');
+        $password = $this->ReadPropertyString('password');
 
+		if($url !== ""){
+			$options = array(
+				'http' => array(
+					'method' => "GET",
+					'header' => "Connection: close\r\n". 
+						"Authorization: Basic ".base64_encode($user.":".$pass)."\r\n",
+					'timeout' => 3
+				)
+			);
+			
+			$context = stream_context_create( $options );
+			$content = @file_get_contents("http://".$ip.$url, false, $context);
+
+			if(!$content){
+				if($debug == true) echo "Meldung von \"url_get_contents\": ".error_get_last()['message']."\n";
+				return false;
+			}
+			else{
+				if($debug == true) echo $http_response_header[0]."\n\n";
+				if($debug == true) echo $content;
+				
+				if(substr($http_response_header[0], 9, -3) == 200) return $content;
+				else return false;
+			}
+		}
+		else{
+			if($debug == true) echo "Meldung von \"url_get_contents\": Logindaten falsch - Daten in keinem Array -> array(\"user\"=> \"username\", \"pass\"=> \"passwort\")\n";
+			return false;
+		}
+	}
+	
     public function GetStatus()
     {
 		$ip = $this->ReadPropertyString('ip');
