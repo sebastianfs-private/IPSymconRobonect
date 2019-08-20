@@ -70,7 +70,7 @@ class RobonectConfig extends IPSModule {
 				"error"   => "/json?cmd=error"
 			);
 				
-			$content = $this->GetStatus($getDataUrl['status'], $debug);
+			$content = $this->url_get_contents($getDataUrl['status'], $debug);
 
 			$status = json_decode($content, true);
 
