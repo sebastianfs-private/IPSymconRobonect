@@ -62,7 +62,7 @@ class RobonectConfig extends IPSModule {
                 // $options[] = ['label' => $name, 'value' => $name];
             // }
 			
-			$debug = False;
+			$debug = True;
 
 			$getDataUrl = array(
 				"status"  => "/json?cmd=status",

@@ -16,15 +16,24 @@ trait RobonectLibrary
 		$user = $this->ReadPropertyString('user');
         $password = $this->ReadPropertyString('password');
 
+        if($debug == true) echo $ip;
+        if($debug == true) echo $user;
+        if($debug == true) echo $password;
+
 		if($url !== ""){
+            
+            if($debug == true) echo $url;
+
 			$options = array(
 				'http' => array(
 					'method' => "GET",
 					'header' => "Connection: close\r\n". 
-						"Authorization: Basic ".base64_encode($user.":".$pass)."\r\n",
+						"Authorization: Basic ".base64_encode($user.":".$password)."\r\n",
 					'timeout' => 3
 				)
-			);
+            );
+            
+            if($debug == true) echo "http://".$ip.$url;
 			
 			$context = stream_context_create( $options );
 			$content = @file_get_contents("http://".$ip.$url, false, $context);
@@ -93,137 +102,5 @@ trait RobonectLibrary
         // }
         // $data = json_decode($response, true);
         // return $data;
-    }
-	
-	// method should be "GET", "PUT", etc..
-	function request($method, $url, $header, $params) {
-		$opts = array(
-			'http' => array(
-				'method' => $method,
-			),
-		);
-
-		// serialize the header if needed
-		if (!empty($header)) {
-			$header_str = '';
-			foreach ($header as $key => $value) {
-				$header_str .= "$key: $value\r\n";
-			}
-			$header_str .= "\r\n";
-			$opts['http']['header'] = $header_str;
-		}
-
-		// serialize the params if there are any
-		if (!empty($params)) {
-			$params_array = array();
-			foreach ($params as $key => $value) {
-				$params_array[] = "$key=$value";
-			}
-			$url .= '?'.implode('&', $params_array);
-		}
-
-		$context = stream_context_create($opts);
-		$data = file_get_contents($url, false, $context);
-		return $data;
-    }
-
-    private function do_ApiCall($url, $postdata = '') {
-        $inst = IPS_GetInstance($this->InstanceID);
-        if ($inst['InstanceStatus'] == IS_INACTIVE) {
-            $this->SendDebug(__FUNCTION__, 'instance is inactive, skip', 0);
-            return;
-        }
-
-        $jtoken = $this->getToken();
-        if ($jtoken == '') {
-            return false;
-        }
-        $token = $jtoken['token'];
-        $provider = $jtoken['provider'];
-
-        $header = [];
-        $header[] = 'Accept: application/json';
-        $header[] = 'Content-Type: application/json';
-        $header[] = 'Authorization: Bearer ' . $token;
-        $header[] = 'Authorization-Provider: ' . $provider;
-
-        $cdata = $this->do_HttpRequest($url, $header, $postdata);
-        $this->SendDebug(__FUNCTION__, 'cdata=' . print_r($cdata, true), 0);
-
-        $this->SetStatus(IS_ACTIVE);
-        return $cdata;
-    }
-
-    private function do_HttpRequest($url, $header = '', $postdata = '') {
-        $req = $postdata != '' ? 'post' : 'get';
-
-        $this->SendDebug(__FUNCTION__, 'http-' . $req . ': url=' . $url, 0);
-        $time_start = microtime(true);
-
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        if ($header != '') {
-            $this->SendDebug(__FUNCTION__, '    header=' . print_r($header, true), 0);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
-        }
-        if ($postdata != '') {
-            $this->SendDebug(__FUNCTION__, '    postdata=' . json_encode($postdata), 0);
-            curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($postdata));
-        }
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-        $cdata = curl_exec($ch);
-        $cerrno = curl_errno($ch);
-        $cerror = $cerrno ? curl_error($ch) : '';
-        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
-
-        $duration = round(microtime(true) - $time_start, 2);
-        $this->SendDebug(__FUNCTION__, ' => errno=' . $cerrno . ', httpcode=' . $httpcode . ', duration=' . $duration . 's', 0);
-        $this->SendDebug(__FUNCTION__, ' => cdata=' . $cdata, 0);
-
-        $statuscode = 0;
-        $err = '';
-        $data = '';
-        if ($cerrno) {
-            $statuscode = IS_SERVERERROR;
-            $err = 'got curl-errno ' . $cerrno . ' (' . $cerror . ')';
-        } elseif ($httpcode != 200 && $httpcode != 201) {
-            if ($httpcode == 401) {
-                $statuscode = IS_UNAUTHORIZED;
-                $err = 'got http-code ' . $httpcode . ' (unauthorized)';
-            } elseif ($httpcode >= 500 && $httpcode <= 599) {
-                $statuscode = IS_SERVERERROR;
-                $err = 'got http-code ' . $httpcode . ' (server error)';
-            } elseif ($httpcode == 204) {
-                // 204 = No Content	= Die Anfrage wurde erfolgreich durchgeführt, die Antwort enthält jedoch bewusst keine Daten.
-                // kommt zB bei senden von SMS
-                $data = json_encode(['status' => 'ok']);
-            } else {
-                $statuscode = IS_HTTPERROR;
-                $err = 'got http-code ' . $httpcode;
-            }
-        } elseif ($cdata == '') {
-            $statuscode = IS_INVALIDDATA;
-            $err = 'no data';
-        } else {
-            $jdata = json_decode($cdata, true);
-            if ($jdata == '') {
-                $statuscode = IS_INVALIDDATA;
-                $err = 'malformed response';
-            } else {
-                $data = $cdata;
-            }
-        }
-
-        if ($statuscode) {
-            $this->LogMessage('url=' . $url . ' => statuscode=' . $statuscode . ', err=' . $err, KL_WARNING);
-            $this->SendDebug(__FUNCTION__, ' => statuscode=' . $statuscode . ', err=' . $err, 0);
-            $this->SetStatus($statuscode);
-        }
-
-        return $data;
     }
 }
