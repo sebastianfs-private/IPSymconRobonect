@@ -1,12 +1,12 @@
 {
-  "id": "{32cf3473-f301-4c6a-8ea6-c107375cf697}",
+  "id": "{32Cf3473-F301-4C6A-8EA6-C107375Cf697}",
   "author": "Sebastian Fasold-Schmid",
   "name": "Robonect",
   "url": "https://github.com/sebastianfs-private/IPSymconRobonect",
   "compatibility": {
     "version": "5.0"
   },
-  "version": "1.1",
+  "version": "1.2",
   "build": 0,
   "date": 0
 }
