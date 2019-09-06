@@ -8,9 +8,7 @@ if (!defined('IS_UNAUTHORIZED')) {
     define('IS_DEVICE_MISSING', IS_EBASE + 5);
 }
 
-trait RobonectLibrary
-{
-	
+trait RobonectLibrary {
 	public function url_get_contents($url, $debug = false){
 		$ip = $this->ReadPropertyString('ip');
 		$user = $this->ReadPropertyString('user');
