@@ -1,12 +1,12 @@
 <?
 
-require_once __DIR__ . '/../libs/common.php';  // globale Funktionen
-require_once __DIR__ . '/../libs/library.php';  // modul-bezogene Funktionen
+require_once '/var/lib/symcon/modules/IPSymconRobonect/libs/common.php';  // globale Funktionen
+require_once '/var/lib/symcon/modules/IPSymconRobonect/libs/library.php';  // modul-bezogene Funktionen
 
-class RobonectConfig extends IPSModule {
-
-    public function Create() {
-        
+class RobonectConfig extends IPSModule
+{
+    public function Create()
+    {
 		parent::Create();
 		
 		$this->RegisterPropertyString('ip', '');
